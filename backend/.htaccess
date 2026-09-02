@@ -1,0 +1,37 @@
+Options -Indexes +FollowSymLinks
+RewriteEngine On
+
+# Stop Apache adding trailing-slash 301 redirects (kills CORS preflight)
+DirectorySlash Off
+
+# Pass Authorization header through rewrites
+RewriteCond %{HTTP:Authorization} .+
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Block direct access to uploads
+RewriteRule ^uploads/ - [F,L]
+
+# ── Nested document routes under projects ─────────────────────
+# /api/projects/{id}/documents/...  →  documents handler
+RewriteRule ^api/projects/[0-9]+/documents(/.*)?$ api/documents/index.php [QSA,L]
+
+# /api/projects/{id}/members/...    →  projects handler
+RewriteRule ^api/projects/[0-9]+/members(/.*)?$   api/projects/index.php [QSA,L]
+
+# /api/projects/{id}/folders/...    →  projects handler
+RewriteRule ^api/projects/[0-9]+/folders(/.*)?$   api/projects/index.php [QSA,L]
+
+# /api/projects/{id}/archive|restore →  projects handler
+RewriteRule ^api/projects/[0-9]+/(archive|restore)$ api/projects/index.php [QSA,L]
+
+# ── Top-level routes ───────────────────────────────────────────
+RewriteRule ^api/auth(/.*)?$          api/auth/index.php [QSA,L]
+RewriteRule ^api/users(/.*)?$         api/users/index.php [QSA,L]
+RewriteRule ^api/projects(/.*)?$      api/projects/index.php [QSA,L]
+RewriteRule ^api/documents(/.*)?$     api/documents/index.php [QSA,L]
+RewriteRule ^api/activity(/.*)?$      api/activity/index.php [QSA,L]
+RewriteRule ^api/notifications(/.*)?$ api/notifications/index.php [QSA,L]
+RewriteRule ^api/favorites(/.*)?$     api/favorites/index.php [QSA,L]
+RewriteRule ^api/search(/.*)?$        api/search/index.php [QSA,L]
+RewriteRule ^api/tags(/.*)?$          api/tags/index.php [QSA,L]
+RewriteRule ^api/dashboard(/.*)?$     api/dashboard/index.php [QSA,L]
